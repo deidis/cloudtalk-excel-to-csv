@@ -2,9 +2,10 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl.cell.cell import Cell
 
-from os import listdir
+import os
 import csv
 
+outputs_dir = "./outputs"
 # Contains the column mapping in .config
 # The key is the cloudtalk CSV column name.
 # The value is the column name(s) of the xl file to map to the key.
@@ -36,7 +37,7 @@ def convert_sheet_to_csv(sheet_name:str):
         return cells[0]
 
     
-    with open(f"{xl_name}-{sheet_name}.csv", "w", newline = "") as file:
+    with open(f"{outputs_dir}/{xl_name}-{sheet_name}.csv", "w", newline = "") as file:
         writer = csv.writer(file, delimiter = ";")
         writer.writerow(config_map.keys())
 
@@ -70,6 +71,9 @@ def convert_sheet_to_csv(sheet_name:str):
 
 if __name__ == "__main__":
     #try:
+        if not os.path.exists(outputs_dir):
+            os.mkdir(outputs_dir)
+
         config:str = open("./.config")
         for line in config:
             if line.startswith("//") or len(line) == 0 or line.isspace():
@@ -82,7 +86,7 @@ if __name__ == "__main__":
             if len(values[1]) == 0 or values[1].isspace():
                 print(f"Warning: The column \"{values[0]}\" is unset.")
 
-        xl_files:list[str] = [file for file in listdir(".") if ".xlsx" in file]
+        xl_files:list[str] = [file for file in os.listdir(".") if ".xlsx" in file]
 
         if len(xl_files) == 0:
             raise Exception("No .xlsx files found in this directory.")
