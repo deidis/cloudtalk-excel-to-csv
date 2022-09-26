@@ -48,6 +48,7 @@ def convert_sheet_to_csv(sheet_name:str):
             # Loop through each mapping in the config.
             for mapping in config_map.values():
                 if len(mapping) == 0 or mapping.isspace():
+                    data.append("")
                     continue
 
                 # Handle merging columns.
