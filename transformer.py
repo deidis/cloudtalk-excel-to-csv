@@ -34,6 +34,7 @@ def convert_sheet_to_csv(sheet_name:str):
             raise Exception(f"The column \"{column_name}\" was not found in sheet \"{sheet_name}\" of document \"{xl_name}\".\nPlease change the column name or the config file to match each other.")
         
         return cells[0]
+
     
     with open(f"{xl_name}-{sheet_name}.csv", "w", newline = "") as file:
         writer = csv.writer(file, delimiter = ";")
@@ -66,7 +67,6 @@ def convert_sheet_to_csv(sheet_name:str):
 
             writer.writerow(data)
 
-    return
 
 if __name__ == "__main__":
     #try:
