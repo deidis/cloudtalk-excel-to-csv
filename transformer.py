@@ -36,7 +36,7 @@ def convert_sheet_to_csv(sheet_name:str):
         return cells[0]
     
     with open(f"{xl_name}-{sheet_name}.csv", "w", newline = "") as file:
-        writer = csv.writer(file)
+        writer = csv.writer(file, delimiter = ";")
         writer.writerow(config_map.keys())
 
         # Loop through each row
