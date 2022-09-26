@@ -5,7 +5,7 @@ from openpyxl.cell.cell import Cell
 import os
 import csv
 
-outputs_dir = "./outputs"
+OUTPUTS_DIR = "./outputs"
 # Contains the column mapping in .config
 # The key is the cloudtalk CSV column name.
 # The value is the column name(s) of the xl file to map to the key.
@@ -37,7 +37,7 @@ def convert_sheet_to_csv(sheet_name:str):
         return cells[0]
 
     
-    with open(f"{outputs_dir}/{xl_name}-{sheet_name}.csv", "w", newline = "") as file:
+    with open(f"{OUTPUTS_DIR}/{xl_name}-{sheet_name}.csv", "w", newline = "") as file:
         writer = csv.writer(file, delimiter = ";")
         writer.writerow(config_map.keys())
 
@@ -71,8 +71,8 @@ def convert_sheet_to_csv(sheet_name:str):
 
 if __name__ == "__main__":
     #try:
-        if not os.path.exists(outputs_dir):
-            os.mkdir(outputs_dir)
+        if not os.path.exists(OUTPUTS_DIR):
+            os.mkdir(OUTPUTS_DIR)
 
         config:str = open("./.config")
         for line in config:
@@ -90,17 +90,17 @@ if __name__ == "__main__":
 
         if len(xl_files) == 0:
             raise Exception("No .xlsx files found in this directory.")
-            
-        xl_file_name = xl_files[0]
-        # TODO: Remove this
-        xl_file_name = "sample2.xlsx"
-        wb = load_workbook(xl_file_name)
-        print(f"Converting \"{xl_file_name}\" document.")
+        
+        for file in xl_files:
+            xl_file_name = file
+            wb = load_workbook(xl_file_name)
+            print(f"Converting \"{xl_file_name}\" document.")
 
-        for sheet in wb.sheetnames:
-            convert_sheet_to_csv(sheet)
+            for sheet in wb.sheetnames:
+                convert_sheet_to_csv(sheet)
+            print()
 
-        input("\nFinished!\nPress ENTER to close.")
+        input("Finished!\nPress ENTER to close.")
     
     # except Exception as e:
     #     input(f"\nError: {str(e)}\nPress ENTER to exit.")
