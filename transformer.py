@@ -2,8 +2,7 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl.cell.cell import Cell
 
-import os
-import csv
+import os, csv, msoffcrypto, io
 
 OUTPUTS_DIR = "./outputs"
 # Contains the column mapping in .config
@@ -94,7 +93,26 @@ if __name__ == "__main__":
         
         for file in xl_files:
             xl_file_name = file
-            wb = load_workbook(xl_file_name)
+
+            # Try to open the xl file.
+            # This will catch if the file is password locked.
+            try:
+                wb = load_workbook(xl_file_name)
+            except:
+                unlocked_wb = io.BytesIO()
+                password:str = input(f"The document \"{xl_file_name}\" is locked by a password. Please enter it to continue: ").strip()
+                
+                while True:
+                    try:
+                        office_file = msoffcrypto.OfficeFile(open(xl_file_name, "rb"))
+                        office_file.load_key(password = password)
+                        office_file.decrypt(unlocked_wb)
+                        break
+                    except:
+                        password = input("Incorrect password entered. Try again: ").strip()
+                    
+                wb = load_workbook(unlocked_wb)
+
             print(f"Converting \"{xl_file_name}\" document.")
 
             for sheet in wb.sheetnames:
