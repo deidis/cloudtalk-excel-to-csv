@@ -1,7 +1,7 @@
 from openpyxl import Workbook, load_workbook
 from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl.cell.cell import Cell
-from terminaltables import AsciiTable
+from tabulate import tabulate
 
 import os, csv, msoffcrypto, io
 
@@ -76,8 +76,7 @@ def convert_sheet_to_csv(sheet_name:str):
             writer.writerow(data)
 
     # Display first two rows (with column names) of csv to user.
-    first_two_rows.insert(0, config_map.keys())
-    print(AsciiTable(first_two_rows).table)
+    print(tabulate(first_two_rows, headers = config_map.keys(), tablefmt = "fancy_grid"))
     if sheet.max_row - 3 > 0:
         print(f"... {sheet.max_row - 3} more")
 
