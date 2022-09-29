@@ -1,6 +1,7 @@
 from openpyxl import Workbook, load_workbook
 from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl.cell.cell import Cell
+from terminaltables import AsciiTable
 
 import os, csv, msoffcrypto, io
 
@@ -40,6 +41,9 @@ def convert_sheet_to_csv(sheet_name:str):
         writer = csv.writer(file, delimiter = ";")
         writer.writerow(config_map.keys())
 
+        # Used for drawing a small table.
+        first_two_rows:list[list] = []
+
         # Loop through each row
         for row in sheet.iter_rows(min_row = 2):
             data:list[str] = []
@@ -54,7 +58,7 @@ def convert_sheet_to_csv(sheet_name:str):
                 elif "+" in mapping:
                     column_names:list[str] = mapping.split("+")
                     # Get the cells of each column.
-                    cells:list[Cell] = [get_cell_from_column_name(name, row) for name in column_names]
+                    cells:list[Cell] = [get_cell_from_column_name(name.strip(), row) for name in column_names]
 
                     combined_value:str = ""
                     for cell in cells:
@@ -66,22 +70,31 @@ def convert_sheet_to_csv(sheet_name:str):
                 else:
                     data.append(get_cell_from_column_name(mapping, row).value)
 
+            if len(first_two_rows) < 2:
+                first_two_rows.append(data)
+
             writer.writerow(data)
+
+    # Display first two rows (with column names) of csv to user.
+    first_two_rows.insert(0, config_map.keys())
+    print(AsciiTable(first_two_rows).table)
+    if sheet.max_row - 3 > 0:
+        print(f"... {sheet.max_row - 3} more")
 
 
 if __name__ == "__main__":
-    #try:
+    try:
         if not os.path.exists(OUTPUTS_DIR):
             os.mkdir(OUTPUTS_DIR)
 
-        config:str = open("./.config")
+        config:str = open("./config.txt")
         for line in config:
             if line.startswith("//") or len(line) == 0 or line.isspace():
                 continue
 
             line = line.strip()
             values:list[str] = line.split("=")
-            config_map[values[0]] = values[1]
+            config_map[values[0].strip()] = values[1].strip()
             
             if len(values[1]) == 0 or values[1].isspace():
                 print(f"Warning: The column \"{values[0]}\" is unset.")
@@ -121,5 +134,5 @@ if __name__ == "__main__":
 
         input("Finished!\nPress ENTER to close.")
     
-    # except Exception as e:
-    #     input(f"\nError: {str(e)}\nPress ENTER to exit.")
+    except Exception as e:
+        input(f"\nError: {str(e)}\nPress ENTER to exit.")
