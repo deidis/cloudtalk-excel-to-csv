@@ -41,7 +41,7 @@ Currently no packaged version, simply use python. Step by step:
 - If there are dependencies missing, you'll need these:
     - `...% pip3 install openpyxl`
     - `...% pip3 install tabulate`
-    - `...% pip3 install msoffcrypto` (for password-protected Excel files)
+    - `...% pip3 install msoffcrypto-tool` (for password-protected Excel files)
 
 **To run the transformer simply run `...% python3 transformer.py` on the command line.**
 
