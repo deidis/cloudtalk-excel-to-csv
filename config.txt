@@ -1,23 +1,23 @@
-// Sample config:
-// Cloudtalk Column=Your Column
-// Cloudtalk Column=Column1+Column2 (To merge 2 columns)
-// When merging two columns, a space will automatically be added between the values.
 //
-// name=name OR name=first_name+last_name
-// phone=phone
-// email=email
-// email2=
+// Mapping the column:
+// CloudTalk Column=Your Column
+// Example: phone=Phone Number
+//
+// Merging and mapping columns:
+// CloudTalk Column=Column1 + Column2 + ...
+// Example: name=First name + Last name
+// When merging two columns, a space will automatically be added between the values.
 
-name=NAME
+name=FIRST NAME + LAST NAME
 phone=PHONE
-email=EMAIL
+email=
 email2=
-title=TITLE
-company=COMPANY
-address=ADDRESS
-city=CITY
-state=STATE
-zip=ZIP
-country=COUNTRY
-industry=INDUSTRY
-website=WEBSITE
+title=
+company=
+address=
+city=
+state=
+zip=
+country=
+industry=
+website=
