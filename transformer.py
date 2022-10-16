@@ -22,7 +22,7 @@ def convert_sheet_to_csv(sheet_name:str):
     first_row:list[Cell] = sheet[1]
 
     # Returns a cell from the row at the given column name.
-    def get_cell_from_column_name(column_name:str, row:list[Cell]) -> Cell:
+    def get_cell_from_column_name(column_name:str, row:list[Cell]) -> Cell | None:
         column_letter:str = ""
         for cell in first_row:
             if cell.value == column_name:
@@ -32,7 +32,7 @@ def convert_sheet_to_csv(sheet_name:str):
         cells:list[Cell] = [c for c in row if c.column_letter == column_letter]
 
         if len(cells) == 0:
-            raise Exception(f"The column \"{column_name}\" was not found in sheet \"{sheet_name}\" of document \"{xl_name}\".\nPlease change the column name or the config file to match each other.")
+            return None
         
         return cells[0]
 
@@ -40,6 +40,7 @@ def convert_sheet_to_csv(sheet_name:str):
     with open(f"{OUTPUTS_DIR}/{xl_name}-{sheet_name}.csv", "w", newline = "") as file:
         writer = csv.writer(file, delimiter = ";")
         writer.writerow(config_map.keys())
+        row_count:int = 0
 
         # Used for drawing a small table.
         first_two_rows:list[list] = []
@@ -47,7 +48,12 @@ def convert_sheet_to_csv(sheet_name:str):
         # Loop through each row
         for row in sheet.iter_rows(min_row = 2):
             data:list[str] = []
-
+            
+            # Ignore lines that are completely empty.
+            if len([cell.value for cell in row if cell.value is not None or (cell.value is str and len(cell.value) > 0 and not cell.value.isspace())]) == 0:
+                continue
+            
+            row_count += 1
             # Loop through each mapping in the config.
             for mapping in config_map.values():
                 if len(mapping) == 0 or mapping.isspace():
@@ -58,10 +64,12 @@ def convert_sheet_to_csv(sheet_name:str):
                 elif "+" in mapping:
                     column_names:list[str] = mapping.split("+")
                     # Get the cells of each column.
-                    cells:list[Cell] = [get_cell_from_column_name(name.strip(), row) for name in column_names]
+                    cells:list[Cell | None] = [get_cell_from_column_name(name.strip(), row) for name in column_names]
 
                     combined_value:str = ""
                     for cell in cells:
+                        if cell is None:
+                            continue
                         combined_value += str(cell.value) + " "
                     
                     data.append(combined_value.strip())
@@ -77,8 +85,8 @@ def convert_sheet_to_csv(sheet_name:str):
 
     # Display first two rows (with column names) of csv to user.
     print(tabulate(first_two_rows, headers = config_map.keys(), tablefmt = "fancy_grid"))
-    if sheet.max_row - 3 > 0:
-        print(f"... {sheet.max_row - 3} more")
+    if row_count > 2:
+        print(f"... {row_count - 2} more")
 
 
 if __name__ == "__main__":
