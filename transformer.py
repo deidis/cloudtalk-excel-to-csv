@@ -76,7 +76,12 @@ def convert_sheet_to_csv(sheet_name:str):
 
                 # Normal 1:1 mapping.
                 else:
-                    data.append(get_cell_from_column_name(mapping, row).value)
+                    cell:Cell | None = get_cell_from_column_name(mapping, row)
+
+                    if(cell is not None):
+                        data.append(get_cell_from_column_name(mapping, row).value)
+                    else:
+                        data.append("")
 
             if len(first_two_rows) < 2:
                 first_two_rows.append(data)
