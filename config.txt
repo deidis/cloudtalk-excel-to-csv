@@ -8,7 +8,7 @@
 // email=email
 // email2=
 
-name=NAME
+name=FIRST NAME + LAST NAME
 phone=PHONE
 email=EMAIL
 email2=
